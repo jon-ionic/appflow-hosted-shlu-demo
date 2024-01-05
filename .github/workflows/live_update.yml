@@ -1,0 +1,40 @@
+name: Deploy Appflow-Hosted Live Update
+
+on:
+  push:
+
+jobs:
+  LiveUpdate-Deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      IONIC_TOKEN: ${{ secrets.IONIC_TOKEN }}
+      IONIC_PRIVATE_KEY: ${{ secrets.IONIC_PRIVATE_KEY }}
+    
+    steps:
+    - name: Install Ionic Cloud CLI
+      run: curl -sL https://ionic.io/get-ionic-cloud-cli | bash
+    
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install project dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Upload artifact with Appflow
+      run: |
+        ionic-cloud live-update upload-artifact \  
+        --app-id=3df43548 \
+        --build-dir=dist \
+        --commit-ref=main \
+        --commit-sha=4c544559f23b73ea5a40b2fac2d8082724495e6f \
+        --commit-message="${{ github.event.head_commit.message }}" \
+        --signing-key="$(echo $IONIC_PRIVATE_KEY)"
