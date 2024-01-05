@@ -9,7 +9,6 @@ jobs:
 
     env:
       IONIC_TOKEN: ${{ secrets.IONIC_TOKEN }}
-      IONIC_PRIVATE_KEY: ${{ secrets.IONIC_PRIVATE_KEY }}
     
     steps:
     - name: Install Ionic Cloud CLI
@@ -35,6 +34,6 @@ jobs:
         --app-id=3df43548 \
         --build-dir=dist \
         --commit-ref=main \
-        --commit-sha=4c544559f23b73ea5a40b2fac2d8082724495e6f \
+        --commit-sha=$GITHUB_SHA \
         --commit-message="${{ github.event.head_commit.message }}" \
-        --signing-key="$(echo $IONIC_PRIVATE_KEY)"
+        --signing-key="${{ secrets.IONIC_PRIVATE_KEY }}"
